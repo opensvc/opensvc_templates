@@ -1,3 +1,8 @@
+Requirements
+* CNI installed
+* docker or podman installed
+* OpenSVC agent 2.1+ installed
+
 Create the certificate for nginx.
 
 ```
