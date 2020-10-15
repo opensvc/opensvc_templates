@@ -15,8 +15,7 @@ Create a configmap to host the nginx configuration.
 
 ```
 om test/cfg/collector create
-om test/cfg/collector add --key nginx.conf --from https://raw.githubusercontent.com/opensvc/opensvc_templates/main/collector/nginx.conf
-```
+curl -o- -s https://raw.githubusercontent.com/opensvc/opensvc_templates/main/collector/nginx.conf | om test/cfg/collector add --key nginx.conf```
 
 Deploy the collector service.
 ```
