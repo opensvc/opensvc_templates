@@ -3,7 +3,7 @@ Requirements
 * docker or podman installed
 * OpenSVC agent 2.1+ installed
 
-Create the registry.opensvc.com credential secret.
+Create a secret to host the registry.opensvc.com credentials.
 
 ```
 docker login -u <email> registry.opensvc.com
@@ -11,14 +11,15 @@ om test/sec/creds-registry-opensvc-com create
 om test/sec/creds-registry-opensvc-com add --from ~/.docker/config.json
 ```
 
-Create the certificate for nginx.
+Create a secret to host the ssl certificate for nginx and db password.
 
 ```
 om test/sec/collector create
 om test/sec/collector gen cert
+om test/sec/collector add --key db_password --value opensvc
 ```
 
-Create the configmap to host the nginx.conf content.
+Create a configmap to host the nginx configuration.
 
 ```
 om test/cfg/collector create
