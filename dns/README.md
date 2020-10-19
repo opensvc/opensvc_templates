@@ -3,7 +3,7 @@ Requirements
 * docker or podman installed
 * OpenSVC agent 2.1+ installed
 
-Deploy the collector service.
+Deploy the dns service.
 ```
 om system/svc/dns deploy --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/dns/dns.conf
 ```
