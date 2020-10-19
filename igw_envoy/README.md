@@ -19,7 +19,7 @@ om system/svc/envoy deploy \
   --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/igw_envoy/bridge-hostns.conf \
   --env public_interface=br0 \
   --env public_ipaddr=10.0.3.10 \
-  --env public_netmask=24 \
+  --env public_netmask=24
 ```
 
 # Failover service publishing on a host interface ipvlan ip address
