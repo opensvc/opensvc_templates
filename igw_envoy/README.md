@@ -3,6 +3,7 @@
 * CNI installed
 * docker or podman installed
 * OpenSVC agent 2.1+ installed
+* Cluster DNS service installed
 
 Create a configmap to host the envoy configuration.
 
