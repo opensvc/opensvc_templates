@@ -1,0 +1,6 @@
+{
+    "api": {
+        "enabled": true,
+        "bind": ":8888"
+    }
+}
