@@ -9,7 +9,7 @@ Create a configmap to host the envoy configuration.
 
 ```
 om system/cfg/envoy create
-curl -o- -s https://raw.githubusercontent.com/opensvc/opensvc_templates/main/igw_envoy/xds.yml | om system/cfg/envoy add --key xds.yml --from -
+curl -o- -s https://raw.githubusercontent.com/opensvc/opensvc_templates/main/igw_envoy/xds.yaml | om system/cfg/envoy add --key xds.yaml --from -
 ```
 
 # Failover service publishing on a host bridge ip address
