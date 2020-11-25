@@ -1,0 +1,36 @@
+PDNS_TMPL=/tmp/etc/server.template
+PDNS_CONF=/tmp/etc/pdns.conf
+RECURSOR_TMPL=/tmp/etc/recursor.template
+RECURSOR_CONF=/tmp/etc/recursor.conf
+DNS_LIST=${DNS// /,}
+for d in $DNS
+do
+	case $d in
+	*:*)
+		AUTHORITY="[$d]:$PORT;$AUTHORITY"
+		;;
+	*.*)
+		AUTHORITY="$d:$PORT;$AUTHORITY"
+		;;
+	esac
+done
+[ ! -z $AUTHORITY ] && FWD="$CLUSTERNAME=$AUTHORITY,10.in-addr.arpa=$AUTHORITY"
+
+cp $PDNS_TMPL $PDNS_CONF
+echo "local-address+=$DNS_LIST" >>$PDNS_CONF
+echo "local-port=$PORT" >>$PDNS_CONF
+echo "remote-connection-string=unix:path=$SOCK" >>$PDNS_CONF
+
+echo "server configuration"
+echo "===================="
+cat $PDNS_CONF
+echo
+
+cp $RECURSOR_TMPL $RECURSOR_CONF
+echo "local-address+=$DNS_LIST" >>$RECURSOR_CONF
+echo "allow-from+=$DNS_LIST" >>$RECURSOR_CONF
+echo "forward-zones+=$FWD" >>$RECURSOR_CONF
+
+echo "recursor configuration"
+echo "======================"
+cat $RECURSOR_CONF
