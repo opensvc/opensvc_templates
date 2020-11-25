@@ -1,0 +1,13 @@
+daemon=no
+disable-syslog
+disable-packetcache
+max-cache-ttl=60
+max-negative-ttl=60
+local-port=53
+udp-truncation-threshold=4096
+non-local-bind
+allow-from=127.0.0.1/32,10.0.0.0/8,fd00::/112,::1
+query-local-address=::,0.0.0.0
+setuid=0
+local-address=
+forward-zones=
