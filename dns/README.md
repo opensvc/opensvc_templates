@@ -2,7 +2,7 @@ Requirements
 * CNI installed
 * docker or podman installed
 * OpenSVC agent 2.1-448+ installed
-* cluster.dns=<ip1> [<ip2> ...] configured in cluster.conf
+* cluster.dns=ip1 [ip2 ...] configured in cluster.conf
 
 Deploy the dns service.
 ```
