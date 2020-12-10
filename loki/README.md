@@ -4,7 +4,7 @@
 * docker or podman installed
 * OpenSVC agent 2.1-448+ installed
 
-# Deploy the dns service.
+# Deploy the loki service.
 
 ```
 om mon/cfg/loki create
