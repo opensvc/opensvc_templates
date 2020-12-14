@@ -1,0 +1,70 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /data/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+- job_name: system
+  static_configs:
+  - targets:
+      - localhost
+    labels:
+      job: varlogs
+      host: localhost
+      __path__: /var/log/*log
+
+- job_name: opensvc-00
+  static_configs:
+  - targets:
+      - localhost
+    labels:
+      job: opensvc-root
+      host: localhost
+      __path__: /var/log/opensvc/*.log
+
+- job_name: opensvc-11
+  static_configs:
+  - targets:
+      - localhost
+    labels:
+      job: opensvc-namespaces
+      host: localhost
+      __path__: /var/log/opensvc/namespaces/*/*/*.log
+
+- job_name: journal
+  journal:
+    max_age: 12h
+    path: /var/log/journal
+    labels:
+      job: systemd-journal
+      host: localhost
+
+  relabel_configs:
+    - source_labels: ['__journal__systemd_unit']
+      target_label: 'unit'
+    - source_labels: ['__journal_com_opensvc_id']
+      target_label: 'opensvc_id'
+    - source_labels: ['__journal_com_opensvc_kind']
+      target_label: 'opensvc_kind'
+    - source_labels: ['__journal_com_opensvc_name']
+      target_label: 'opensvc_name'
+    - source_labels: ['__journal_com_opensvc_namespace']
+      target_label: 'opensvc_ns'
+    - source_labels: ['__journal_com_opensvc_path']
+      target_label: 'opensvc_path'
+    - source_labels: ['__journal_com_opensvc_rid']
+      target_label: 'opensvc_rid'
+
+- job_name: syslog
+  syslog:
+    listen_address: 0.0.0.0:1514
+    labels:
+      job: "syslog"
+  relabel_configs:
+    - source_labels: ['__syslog_message_hostname']
+      target_label: 'host'
