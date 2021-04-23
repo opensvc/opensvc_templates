@@ -29,6 +29,7 @@ om system/svc/envoy deploy \
   --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/igw_envoy/ipvlan.conf
   --env public_interface=eth0 \
   --env public_ipaddr=10.0.3.10 \
+  --env public_gateway=10.0.3.1 \
   --env public_netmask=24 \
   --env backend_network_name=default
   ```
