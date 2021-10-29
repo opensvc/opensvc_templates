@@ -21,7 +21,7 @@ EOF
 
 # dump schema
 echo "== dumping database schema =="
-$MYSQLDUMP --no-data --databases opensvc pdns | sed -e "s/SECURITY DEFINER/SECURITY INVOKER/" >> $LATEST_DIR/schema.dump
+$MYSQLDUMP --no-data --routines --databases opensvc pdns | sed -e "s/SECURITY DEFINER/SECURITY INVOKER/" >> $LATEST_DIR/schema.dump
 
 typeset -i total=$(wc -l $PATH_SCRIPT/dbdump.tables | awk '{print $1}')
 typeset -i cpt=0
