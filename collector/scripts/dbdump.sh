@@ -47,7 +47,7 @@ cd ${DUMP_DIR} && {
         echo "--> before cleanup <--"
 	ls -1rt opensvc.dump.*
 	echo
-        for file in $(ls -1rt opensvc.dump.* | head -n -${DUMP_RETENTION})
+        for file in $(ls -1rt opensvc.dump.*.tar.gz | head -n -${DUMP_RETENTION})
 	do
             echo "== deleting file ${file} =="
 	    rm -f ${file}
