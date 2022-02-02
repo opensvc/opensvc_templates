@@ -13,6 +13,12 @@ om test/sec/collector gen cert
 om test/sec/collector add --key db_password --value opensvc
 ```
 
+Optional: web2py admin console password
+
+```
+om test/sec/collector add --key CUSTO_WEB2PY_ADMIN_CONSOLE_PWD --value S3Cr3t
+```
+
 ***
 
 Create a configmap to host the nginx configuration and admin scripts.
