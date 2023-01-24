@@ -39,17 +39,6 @@ Deploy the collector service.
 om test/svc/collector deploy --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/collector/collector.conf
 ```
 
-The deployment clones the opensvc/collector project from github during the init container (container#1) run. If that clone is not possible due to security policies on your site, you can clone that project on an accessible server and set the OPENSVC_COLLECTOR_REPO environment variable in container#01.
-
-The following block demonstrates how to replace the previous deploy command 
-
-```
-om test/sec/collector add --key repo --value https://<access token>@lab.my.corp/opensvc/collector
-om test/svc/collector create --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/collector/collector.conf
-om test/svc/collector set --kw container#01.secrets_environment+=OPENSVC_COLLECTOR_REPO=collector/repo
-om test/svc/collector provision
-```
-
 ***
 
 Display service information.
