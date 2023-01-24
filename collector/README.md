@@ -5,18 +5,19 @@ Requirements
 
 ***
 
-Create a secret to host the ssl certificate for nginx and db password.
+Create a secret to host the ssl certificate for nginx, git projet url (may contain access token) and db password.
 
 ```
 om test/sec/collector create
 om test/sec/collector gen cert
 om test/sec/collector add --key db_password --value opensvc
-```
-
-Optional: web2py admin console password
-
-```
 om test/sec/collector add --key CUSTO_WEB2PY_ADMIN_CONSOLE_PWD --value S3Cr3t
+om test/sec/collector add --key repo --value https://github.com/opensvc/collector
+```
+
+With a private git clone, to circumvent github access denial,
+```
+om test/sec/collector change --key repo --value https://username:<personal access token>@lab.my.corp/opensvc/collector
 ```
 
 ***
@@ -83,3 +84,4 @@ Cleanup (service + data loss !) can be done using the command below
 ```
 om 'test/*/*' purge
 ```
+
