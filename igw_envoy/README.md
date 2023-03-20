@@ -80,5 +80,5 @@ system/svc/envoy                   up
       |- volume#0         ........ up         envoy-data                                                   
       |- container#0      ...../.. up         docker google/pause                                          
       |- container#envoy  ...../.. up         docker envoyproxy/envoy-alpine:v1.12.0                       
-      `- container#xds    ...../.. up         docker opensvc/igw_envoy:1.28                                
+      `- container#xds    ...../.. up         docker ghcr.io/opensvc/igw_envoy:1.28                                
 ```
