@@ -11,3 +11,7 @@ query-local-address=::,0.0.0.0
 setuid=0
 local-address=
 forward-zones=
+# The recursor will try to query the root DNS servers, which may be
+# firewalled.  Uncomment the following line to force the recursor
+# forward to accessible DNS instead.
+#forward-zones-recurse=.=8.8.8.8:53;8.8.4.4:53;
