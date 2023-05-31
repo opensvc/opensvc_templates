@@ -9,6 +9,7 @@ non-local-bind
 allow-from=127.0.0.1/32,10.0.0.0/8,fd00::/112,::1
 query-local-address=::,0.0.0.0
 setuid=0
+dnssec=process-no-validate
 local-address=
 forward-zones=
 # The recursor will try to query the root DNS servers, which may be
