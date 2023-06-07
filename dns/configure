@@ -1,7 +1,9 @@
-PDNS_TMPL=/tmp/etc/server.template
-PDNS_CONF=/tmp/etc/pdns.conf
-RECURSOR_TMPL=/tmp/etc/recursor.template
-RECURSOR_CONF=/tmp/etc/recursor.conf
+PDNS_UID=${PDNS_UID:-953}
+PDNS_GID=${PDNS_GID:-953}
+PDNS_TMPL=/mnt/etc/server.template
+PDNS_CONF=/mnt/etc/pdns.conf
+RECURSOR_TMPL=/mnt/etc/recursor.template
+RECURSOR_CONF=/mnt/etc/recursor.conf
 DNS_LIST=${DNS// /,}
 for d in $DNS
 do
@@ -34,3 +36,6 @@ echo "forward-zones+=$FWD" >>$RECURSOR_CONF
 echo "recursor configuration"
 echo "======================"
 cat $RECURSOR_CONF
+
+mkdir -p /mnt/pdns-recursor
+chown $PDNS_UID:$PDNS_GUID /mnt/pdns-recursor
