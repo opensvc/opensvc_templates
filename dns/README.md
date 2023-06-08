@@ -2,7 +2,7 @@
 
 * CNI installed
 * docker or podman installed
-* OpenSVC agent installed, minimum version 2.1-1646
+* OpenSVC agent installed, minimum version 2.1-1651
 * cluster.dns=ip1 [ip2 ...] configured in cluster.conf
 
 # Deploy the dns service.
