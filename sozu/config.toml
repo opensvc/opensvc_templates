@@ -257,7 +257,7 @@ cipher_list = [
 # default certificate and key
 # in case you want to set up TLS without SNI, you can define the default
 # certificate here
-certificate = "/certs/certs.pem"
+certificate = "/certs/cert.pem"
 key = "/certs/key.pem"
 certificate_chain = "/certs/chain.pem"
 
@@ -314,7 +314,7 @@ load_balancing = "ROUND_ROBIN"
 frontends = [
     { address = "0.0.0.0:8080", hostname = "lolcatho.st", tags = { key = "value" }, path = "/api" },
     # HTTPS frontends also have an optional `tls_versions` key like the HTTPS listeners
-    { address = "0.0.0.0:8443", hostname = "lolcatho.st", tags = { key = "value" }, certificate = "/certs/certs.pem", key = "/certs/key.pem", certificate_chain = "/certs/chain.pem" },
+    { address = "0.0.0.0:8443", hostname = "lolcatho.st", tags = { key = "value" }, certificate = "/certs/cert.pem", key = "/certs/key.pem", certificate_chain = "/certs/chain.pem" },
 ]
 
 # backends configuration
