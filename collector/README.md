@@ -7,17 +7,25 @@ Requirements
 
 Create a secret to host the ssl certificate for nginx, git projet url (may contain access token) and db password.
 
+First set namespace and service name as environment variables:
 ```
-om test/sec/collector create
-om test/sec/collector gen cert
-om test/sec/collector add --key db_password --value opensvc
-om test/sec/collector add --key CUSTO_WEB2PY_ADMIN_CONSOLE_PWD --value S3Cr3t
-om test/sec/collector add --key repo --value https://github.com/opensvc/collector
+export NS=infra
+export SVC=collector
+```
+
+Then start deployment
+
+```
+om $NS/sec/$SVC create
+om $NS/sec/$SVC gen cert
+om $NS/sec/$SVC add --key db_password --value opensvc
+om $NS/sec/$SVC add --key CUSTO_WEB2PY_ADMIN_CONSOLE_PWD --value S3Cr3t
+om $NS/sec/$SVC add --key repo --value https://github.com/opensvc/collector
 ```
 
 With a private git clone, to circumvent github access denial,
 ```
-om test/sec/collector change --key repo --value https://username:<personal access token>@lab.my.corp/opensvc/collector
+om $NS/sec/$SVC change --key repo --value https://username:<personal access token>@lab.my.corp/opensvc/collector
 ```
 
 ***
@@ -25,25 +33,25 @@ om test/sec/collector change --key repo --value https://username:<personal acces
 Create a configmap to host the nginx configuration and admin scripts.
 
 ```
-om test/cfg/collector create
-curl -o- -s https://raw.githubusercontent.com/opensvc/opensvc_templates/main/collector/nginx.conf | om test/cfg/collector add --key nginx.conf --from -
-curl -o- -s https://raw.githubusercontent.com/opensvc/opensvc_templates/main/collector/scripts/dbdump.sh | om test/cfg/collector add --key dbdump.sh --from -
-curl -o- -s https://raw.githubusercontent.com/opensvc/opensvc_templates/main/collector/scripts/dbrestore.sh | om test/cfg/collector add --key dbrestore.sh --from -
-curl -o- -s https://raw.githubusercontent.com/opensvc/opensvc_templates/main/collector/scripts/dbdump.tables | om test/cfg/collector add --key dbdump.tables --from -
+om $NS/cfg/$SVC create
+curl -o- -s https://raw.githubusercontent.com/opensvc/opensvc_templates/main/collector/nginx.conf | om $NS/cfg/$SVC add --key nginx.conf --from -
+curl -o- -s https://raw.githubusercontent.com/opensvc/opensvc_templates/main/collector/scripts/dbdump.sh | om $NS/cfg/$SVC add --key dbdump.sh --from -
+curl -o- -s https://raw.githubusercontent.com/opensvc/opensvc_templates/main/collector/scripts/dbrestore.sh | om $NS/cfg/$SVC add --key dbrestore.sh --from -
+curl -o- -s https://raw.githubusercontent.com/opensvc/opensvc_templates/main/collector/scripts/dbdump.tables | om $NS/cfg/$SVC add --key dbdump.tables --from -
 ```
 
 ***
 
 Deploy the collector service.
 ```
-om test/svc/collector deploy --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/collector/collector.conf
+om $NS/svc/$SVC deploy --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/collector/collector.conf
 ```
 
 ***
 
 Display service information.
 ```
-om test/svc/collector print status -r
+om $NS/svc/$SVC print status -r
 ```
 
 All items should be up and green coloured.
@@ -64,7 +72,7 @@ A task is scheduled every day to dump the database on a local volume.
 You can run it manually using 
 
 ```
-om test/svc/collector run --rid task#dbdump
+om $NS/svc/$SVC run --rid task#dbdump
 ```
 
 ***
@@ -73,7 +81,7 @@ Another task can be used to restore a database dump
 It has to be executed manually, and asks for operator confirmation
 
 ```
-om test/svc/collector run --rid task#dbrestore
+om $NS/svc/$SVC run --rid task#dbrestore
 ```
 
 **Warning** data loss expected, be sure that it is what you expect before running this task
@@ -82,6 +90,6 @@ om test/svc/collector run --rid task#dbrestore
 
 Cleanup (service + data loss !) can be done using the command below
 ```
-om 'test/*/*' purge
+om "$NS/*/*" purge
 ```
 
