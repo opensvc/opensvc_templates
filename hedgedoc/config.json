@@ -10,9 +10,9 @@
       "scope": "openid email profile",
       "clientID": "hdoc",
       "clientSecret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-      "authorizationURL": "https://keycloak.opensvc.com/realms/clusters/protocol/openid-connect/auth",
-      "tokenURL": "https://keycloak.opensvc.com/realms/clusters/protocol/openid-connect/token",
-      "userProfileURL": "https://keycloak.opensvc.com/realms/clusters/protocol/openid-connect/userinfo",
+      "authorizationURL": "https://keycloak.acme.com/realms/myrealm/protocol/openid-connect/auth",
+      "tokenURL": "https://keycloak.acme.com/realms/myrealm/protocol/openid-connect/token",
+      "userProfileURL": "https://keycloak.acme.com/realms/myrealm/protocol/openid-connect/userinfo",
       "userProfileUsernameAttr": "preferred_username",
       "userProfileDisplayNameAttr": "name",
       "userProfileEmailAttr": "email"
@@ -21,5 +21,4 @@
       "dialect": "sqlite",
       "storage": "/hedgedoc/data/hedgedoc.sqlite"
     }
-  }
 }
