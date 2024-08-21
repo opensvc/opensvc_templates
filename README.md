@@ -18,6 +18,6 @@ This project contains templates for the OpenSVC infrastructure services:
 
   A container hosting service skeleton : fs.flag, ip.cni from the default backend network, and google/pause container.
 
-* hdoc
+* hedgedoc
 
   A template used to deploy the hedgedoc markdown collaborative editor.
