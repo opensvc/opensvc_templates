@@ -11,10 +11,10 @@
 
 om test/cfg/hdoc create
 om test/cfg/hdoc add --key config.json --from https://raw.githubusercontent.com/opensvc/opensvc_templates/main/hedgedoc/config.json
-om test/svc/hdoc deploy --kw volume#1.shared=false --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/hedgedoc/hdoc.conf
+om test/svc/hdoc deploy --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/hedgedoc/hdoc.conf
 ---
 
-Alternatively, you can choose to set volume#1.shared=true if you are provisioning on a multi-node cluster with a pool that can create shared volumes.
+Alternatively, you can deploy with `--kw volume#1.shared=true` if you are provisioning on a multi-node cluster with a pool that can create shared volumes.
 
 # Official hedgedoc documentation
 
