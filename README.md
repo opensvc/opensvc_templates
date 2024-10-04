@@ -61,3 +61,7 @@ This project contains templates for the OpenSVC infrastructure services:
 * guacamole
 
  A template for deploying Guacamole as a connection manager.
+
+* relay-v3
+
+ A template dor deploying the relay-v3.
