@@ -15,7 +15,6 @@ om system/sec/relay-v3 add --key users/myusername --value mypassword
 # Deploy the relay service
 
 ```
-om system/svc/relay-v3 create
 om system/svc/relay-v3 deploy --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/relay-v3/relay-v3-ip-cni.conf
 ```
 
@@ -42,12 +41,4 @@ Custom the relay-v3 listener port in the host secret:
 
 ```
 om system/sec/relay-v3 add --key cluster/listener.port --value 1215
-```
-
-### Custom cluster name
-
-Custom the relay-v3 cluster name in the host secret:
-
-```
-om system/sec/relay-v3 add --key cluster/cluster.name --value toto
 ```
