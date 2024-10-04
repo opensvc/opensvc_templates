@@ -14,11 +14,9 @@ om system/sec/relay-v3 add --key users/myusername --value mypassword
 
 # Deploy the relay service
 
-**Note**: You can find how to build the relay-v3 container image here: https://github.com/opensvc/docker_osvc_relay-v3
-
 ```
 om system/svc/relay-v3 create
-om system/svc/relay-v3 deploy --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/relay-v3/relay-v3.conf
+om system/svc/relay-v3 deploy --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/relay-v3/relay-v3-ip-cni.conf
 ```
 
 # Options
