@@ -2,7 +2,6 @@
 
 - **CNI** installed
 - **Docker** installed
-- **Relay-v3** container image
 - **OpenSVC** lastest version
 
 # Deploy the relay secrets
