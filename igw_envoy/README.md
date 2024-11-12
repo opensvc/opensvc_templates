@@ -78,7 +78,7 @@ system/svc/envoy                   up
       |- ip#0             ........ up         netns ipvlan-l2 2001:44a:1234:c1:a65d::2/80 ens4@container#0
       |- ip#1             ........ up         cni backend 10.99.0.11/22 eth12                              
       |- volume#0         ........ up         envoy-data                                                   
-      |- container#0      ...../.. up         docker google/pause                                          
+      |- container#0      ...../.. up         docker ghcr.io/opensvc/pause
       |- container#envoy  ...../.. up         docker envoyproxy/envoy-alpine:v1.12.0                       
       `- container#xds    ...../.. up         docker ghcr.io/opensvc/igw_envoy:1.28                                
 ```
