@@ -2,7 +2,7 @@
 
 - **CNI** installed
 - **Docker** installed
-- **OpenSVC** lastest version
+- **OpenSVC** latest version
 
 # Deploy the relay secrets
 
