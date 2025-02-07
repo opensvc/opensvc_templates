@@ -1,0 +1,45 @@
+global
+    log stdout format raw local0 info
+    maxconn 20480
+    ssl-default-bind-ciphers AES256+EECDH:AES256+EDH:!aNULL;
+    tune.ssl.default-dh-param 4096
+
+resolvers clusterdns
+    parse-resolv-conf
+    accepted_payload_size 8192
+
+defaults
+    log global
+    mode http
+    timeout connect 10s
+    timeout client 30s
+    timeout server 30s
+    option forwardfor
+    option httplog
+
+    # never fail on address resolutions
+    default-server init-addr last,libc,none
+
+frontend http
+    bind :::80 v4v6
+    redirect scheme https code 301 if !{ ssl_fc }
+
+frontend https
+    bind :::443 v4v6 ssl crt /usr/local/etc/haproxy/certs/ no-sslv3 no-tls-tickets no-tlsv10 no-tlsv11
+    http-response set-header Strict-Transport-Security "max-age=16000000; includeSubDomains; preload;"
+
+    acl acl_host_svc1 hdr(host) -i svc1.acme.com
+
+    use_backend be_svc1 if acl_host_svc1
+
+    default_backend be_stats
+
+backend be_stats
+    stats enable
+    stats uri /
+    stats refresh 5s
+
+backend be_svc1
+    option httpchk GET /
+    server-template svc1_ 1 svc1.testigw.svc.${CLUSTERNAME}:80 resolvers clusterdns check init-addr none
+
