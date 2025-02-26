@@ -1,4 +1,4 @@
-This template can be deploy to add a HA cluster virtual ip address to a cluster.
+Deploy a HA cluster virtual ip address in a cluster.
 This ip address is useful to access the OpenSVC agent API on any available node.
 
     om system/svc/vip deploy \
