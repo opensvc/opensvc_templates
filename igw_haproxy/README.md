@@ -36,7 +36,7 @@ The frontend uses 2 certificates obtained from a ACME compliant provider, using 
     sudo om testigw/svc/haproxy enter --rid container#2
 
     # For every TLS server name
-    acme.sh --issue --domain s1.opensvc.org --email me@mail.com
+    acme.sh --issue --domain s1.opensvc.org --email me@mail.com --webroot /acme-challenges
     acme.sh --deploy --domain s1.opensvc.org --deploy-hook haproxy
 
 Once issued and deployed, a cronjob will daily renew the expiring certificate.
