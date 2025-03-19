@@ -2,7 +2,7 @@
 
     # Create the frontend TLS certificate
     sudo om testigw/sec/haproxy create
-    sudo om testigw/sec/haproxy gencert
+    sudo om testigw/sec/haproxy gen cert
 
     # Create a haproxy configuration as a cfg key
     sudo om testigw/cfg/haproxy create
@@ -18,7 +18,7 @@ The frontend uses 2 certificates obtained from a ACME compliant provider, using 
 
     # Create the frontend default TLS certificate
     sudo om testigw/sec/haproxy create
-    sudo om testigw/sec/haproxy gencert
+    sudo om testigw/sec/haproxy gen cert
 
     # Create a haproxy configuration as a cfg key
     sudo om testigw/cfg/haproxy create
