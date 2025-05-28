@@ -25,7 +25,7 @@ The frontend uses 2 certificates obtained from a ACME compliant provider, using 
     sudo om testigw/cfg/haproxy add --key haproxy.cfg --from https://raw.githubusercontent.com/opensvc/opensvc_templates/main/igw_haproxy/acme-cfg-haproxy.cfg
 
     # Add the LUA ACME challenge responder script to the cfg
-    sudo om testigw/cfg/haproxy add --key acme-http01-webroot.lua --from https://raw.githubusercontent.com/opensvc/opensvc_templates/main/igw_haproxy/acme-http01-webroot.lua
+    sudo om testigw/cfg/haproxy add --key acme-http01-webroot.lua --from https://raw.githubusercontent.com/opensvc/opensvc_templates/main/igw_haproxy/common/acme-http01-webroot.lua
 
     # Deploy the Ingress Gateway svc
     sudo om testigw/svc/haproxy deploy --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/igw_haproxy/acme-svc.conf
