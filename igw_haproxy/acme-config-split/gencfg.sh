@@ -19,7 +19,7 @@ HAPROXY_CFG_VALIDATE="om $SVC run --rid task#validatecfg"
 function gencert()
 {
     local CERT=$1
-    ls -1 $CERTSDIR | grep -wq "$CERT.pem" || {
+    ls -1 $CERTSDIR | grep -wq "^$CERT.pem" || {
 	echo "[INFO] Generating ssl certificate for $CERT..."
         om $SVC run --rid task#issuecert --env domain=$CERT
     }
