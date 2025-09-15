@@ -1,0 +1,7 @@
+AUTO_UPGRADE=1                                                                                                            
+CERT_HOME=/certs                                                                                                          
+DEPLOY_HAPROXY_HOT_UPDATE=yes                  
+DEPLOY_HAPROXY_PEM_PATH=/certs                 
+DEPLOY_HAPROXY_STATS_SOCKET=/stats/haproxy.sock                  
+                                                                                                                          
+29 23 * * * "/root/.acme.sh"/acme.sh --cron --home "/root/.acme.sh" --config-home "/acme.sh" > /proc/1/fd/1 2>/proc/1/fd/2
