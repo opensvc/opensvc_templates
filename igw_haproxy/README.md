@@ -55,6 +55,9 @@ This configuration demonstrate a https frontend routing solution made for automa
     # Add the LUA ACME challenge responder script to the cfg
     sudo om testigw/cfg/haproxy add --key acme-http01-webroot.lua --from https://raw.githubusercontent.com/opensvc/opensvc_templates/main/igw_haproxy/common/acme-http01-webroot.lua
 
+    # Add the auto-renew crontab
+    sudo om testigw/cfg/haproxy add --key acme.crontab --from https://raw.githubusercontent.com/opensvc/opensvc_templates/main/igw_haproxy/acme-config-split/acme.crontab
+
     # Deploy the Ingress Gateway svc
     sudo om testigw/svc/haproxy deploy --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/igw_haproxy/acme-config-split/acme-svc-split-config.conf
 
