@@ -6,7 +6,7 @@ DUMP_DIR="/dbdumps"
 PATH_SCRIPT="/scripts"
 LATEST_DIR=${DUMP_DIR}/latest
 TIMESTAMP=$(date --utc +%Y%m%d%H%M%S)
-MYSQLDUMP="mysqldump -h 127.0.0.1 -u root -p$MYSQL_ROOT_PASSWORD --hex-blob"
+MYSQLDUMP="mysqldump -h 127.0.0.1 -u root -p$MYSQL_ROOT_PASSWORD --hex-blob --single-transaction"
 DUMP_RETENTION=${DUMP_RETENTION:-7}
 
 [[ -d ${LATEST_DIR} ]] && rm -rf ${LATEST_DIR}
