@@ -35,32 +35,35 @@ To deploy and test the VPN mesh solution, the following components must be avail
 
 * Container Network Interface (CNI): An active CNI is required to properly route and test service-to-service traffic using containerized applications.
 
-
 ## Example
 
 ```
-+------------------------------------------------------------------------+
-|                 backendnet (Network CIDR: 10.101.0.0/16)               |
-+------------------------------------------------------------------------+
-          |                           |                          |
-          |                           |                          |
-+-----------------+         +-----------------+        +-----------------+
-| Internal IP:    |         | Internal IP:    |        | Internal IP:    |
-|   10.101.0.1    |         |   10.101.1.1    |        |   10.101.2.1    |
-| Subnet:         |         | Subnet:         |        | Subnet:         |
-|   10.101.0.0/24 |         |   10.101.1.0/24 |        |   10.101.2.0/24 |
-|                 |         |                 |        |                 |
-|      node1      |         |      node2      |        |      node3      |
-|                 |         |                 |        |                 |
-| Public IP:      |         | Public IP:      |        | Public IP:      |
-|   10.45.0.11    |         |   10.45.0.12    |        |   10.45.0.13    |
-+-----------------+         +-----------------+        +-----------------+
-          |                          |                          |
-          |                          |                          |
-+------------------------------------------------------------------------+
-|                        VPN MESH OVERLAY NETWORK                        |
-|  (tunnels connect 10.45.0.x peers to allow 10.101.x.x svc to talk)     |
-+------------------------------------------------------------------------+
++---------------------------------------------------------------------------+
+|                   backendnet (Network CIDR: 10.101.0.0/16)                |
++---------------------------------------------------------------------------+
+          |                            |                           |
+          |                            |                           |
++------------------+         +------------------+        +------------------+
+| Private Bridge:  |         | Private Bridge:  |        | Private Bridge:  |
+|   obr_backendnet |         |   obr_backendnet |        |   obr_backendnet |
+| Internal IP:     |         | Internal IP:     |        | Internal IP:     |
+|   10.101.0.1     |         |   10.101.1.1     |        |   10.101.2.1     |
+| Subnet:          |         | Subnet:          |        | Subnet:          |
+|   10.101.0.0/24  |         |   10.101.1.0/24  |        |   10.101.2.0/24  |
+|                  |         |                  |        |                  |
+|      node1       |         |      node2       |        |      node3       |
+|                  |         |                  |        |                  |
+| Bridge:          |         | Bridge:          |        | Bridge:          |
+|   br-prd         |         |   br-prd         |        |   br-prd         |
+| Public IP:       |         | Public IP:       |        | Public IP:       |
+|   10.45.0.11     |         |   10.45.0.12     |        |   10.45.0.13     |
++------------------+         +------------------+        +------------------+
+          |                           |                            |
+          |                           |                            |
++---------------------------------------------------------------------------+
+|                          VPN MESH OVERLAY NETWORK                         |
+|    (tunnels connect 10.45.0.x peers to allow 10.101.x.x svc to talk)      |
++---------------------------------------------------------------------------+
 ```
 
 ## Deploy
@@ -74,11 +77,16 @@ $ sudo om cluster config update \
    --set network#backendnet.type=routed_bridge \
    --set network#backendnet.tunnel=never \
    --set network#backendnet.network=10.101.0.0/16 \
-   --set network#backendnet.ips_per_node=256 \
-   --set network#backendnet.dev=br-prd  # if you want another device instead of the default one
+   --set network#backendnet.ips_per_node=256
 ```
 
-Resulting section in the cluster configuration:
+> [NOTE]
+> By default, the backend bridge name is generated automatically `obr_[networkname]`
+> With the previous example command, the backend bridge will be created with link name `obr_backendnet`
+> If you prefer a custom bridge name, you can add the option below to the previous command
+> `--set network#backendnet.dev=br-custom`
+
+Resulting section in the cluster configuration, check with command `$ sudo om cluster print config`:
 
 ```
 [network#backendnet]
@@ -86,8 +94,20 @@ type = routed_bridge
 tunnel = never
 network = 10.101.0.0/16
 ips_per_node = 256 
-dev = br-prd
+subnet@node1 = 10.101.0.0/24
+subnet@node2 = 10.101.1.0/24
+subnet@node3 = 10.101.2.0/24
 ```
+
+You can check the new configured routes:
+
+```
+user@node1:~$ ip route show | grep ^10.101
+10.101.0.0/24 dev obr_backendnet
+10.101.1.0/24 via 10.45.0.12 dev br-prd
+10.101.2.0/24 via 10.45.0.13 dev br-prd
+```
+
 ### Deploy the StrongSwan service
 
 Create a new secret data store:
@@ -119,6 +139,20 @@ Deploy the strongswan service with the right config :
 $ sudo om system/svc/strongswan deploy --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/strongswan/osvc.strongswan.conf
 ```
 
+After a few seconds, you should see an up and running service:
+
+```
+user@node1:~$ sudo om system/svc/strongswan print status
+system/svc/strongswan                    up
+└ instances
+  ├ node3                                up  idle started
+  ├ node2                                up  idle started
+  └ node1                                up  idle started
+    └ resources
+      ├ volume#1               ........  up  strongswan
+      └ container#swanctl      ...../..  up  docker mberner/strongswan:5.9.11
+```
+
 ## Test
 
 ### Deploy a test service on each nodes
@@ -126,6 +160,7 @@ $ sudo om system/svc/strongswan deploy --config https://raw.githubusercontent.co
 ```
 $ sudo om pod1 deploy \
   --kw nodes=node1 \
+  --kw orchestrate=ha \
   --kw container#1.image=ghcr.io/opensvc/pause \
   --kw container#1.rm=true \
   --kw ip#1.type=cni \
@@ -134,6 +169,7 @@ $ sudo om pod1 deploy \
   
 $ sudo om pod2 deploy \
   --kw nodes=node2 \
+  --kw orchestrate=ha \
   --kw container#1.image=ghcr.io/opensvc/pause \
   --kw container#1.rm=true \
   --kw ip#1.type=cni \
@@ -142,6 +178,7 @@ $ sudo om pod2 deploy \
   
 $ sudo om pod3 deploy \
   --kw nodes=node3 \
+  --kw orchestrate=ha \
   --kw container#1.image=ghcr.io/opensvc/pause \
   --kw container#1.rm=true \
   --kw ip#1.type=cni \
@@ -158,7 +195,6 @@ OBJECT    NODE    RID   IP                           NET_NAME     NET_TYPE
 pod1      node1   ip#1  10.101.0.14                  backendnet   routed_bridge  
 pod2      node3   ip#1  10.101.1.79                  backendnet   routed_bridge  
 pod3      node3   ip#1  10.101.2.142                 backendnet   routed_bridge  
-
 ```
 
 **For each pair of nodes :**
@@ -172,7 +208,7 @@ $ sudo tcpdump -i br-prd esp
 $ sudo tcpdump -i br-prd ip6 and esp
 ```
 
-On the other node:
+On the other node (node1):
 
 ```
 # ipv4
