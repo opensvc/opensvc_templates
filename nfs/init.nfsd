@@ -16,14 +16,13 @@ stop() {
 }
 
 status() {
-        threads=$(</proc/fs/nfsd/threads)
-        if [ "$threads" -eq "0" ]
+        if [ ! -r /proc/fs/nfsd/threads ] || [ "$(</proc/fs/nfsd/threads)" -eq 0 ]
         then
                 echo "no threads running" >&2
                 return 1
-        else
-                return 0
         fi
+
+	return 0
 }
 
 case "$1" in
