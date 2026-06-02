@@ -2,7 +2,7 @@
 
 start() {
         /usr/sbin/exportfs -r || exit 1
-        /usr/sbin/rpc.nfsd $NFSTHREADS || exit 1
+        /usr/sbin/rpc.nfsd || exit 1
         if systemctl -q is-active gssproxy
         then
                 systemctl reload gssproxy
