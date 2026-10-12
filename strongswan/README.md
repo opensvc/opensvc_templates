@@ -1,9 +1,17 @@
 # StrongSwan IPsec Mesh
 
-> **Requires OpenSVC agent v3.0.0-rc47 or later** on every node: the
-> configuration is rendered by the agent from the tunnels of each node, with
-> install templates, and kept up to date by event-triggered tasks, which earlier
-> agents do not have.
+## Template generations
+
+| Generation | Requires | Configuration |
+| --- | --- | --- |
+| [v2](v2/README.md) | OpenSVC agent v3.0.0-rc47 or later | one `swanctl.conf` template, rendered on each node from its tunnels, kept current by event-triggered tasks |
+| v1, this page | OpenSVC agent v2.1, or v3 | one `swanctl.conf` key per node, edited by hand |
+
+The files of a generation stay at their url, working with the agents it
+requires: a change needing a newer agent comes as a new generation, in a
+directory of its own. Use the newest generation your agents support.
+
+The rest of this page is the v1 howto.
 
 ## Rationale
 
@@ -21,9 +29,8 @@ A solution: StrongSwan IPsec VPN Mesh
 
 Since clusters can host numerous services and backend networks, deploying a VPN mesh offers an elegant, scalable, and non-intrusive solution.
 
-* Encryption Scope: All traffic traversing the OpenSVC backend networks between nodes is carried by tunnels, and the tunnel traffic is encrypted via IPsec.
+* Encryption Scope: All traffic traversing the OpenSVC backend networks is routed through the mesh endpoints and is encrypted via IPsec.
 * Scalability: The VPN solution avoids added complexity with every new service or backend network, making it a foundational layer.
-* No per-node configuration: one configuration template serves every node, and follows the nodes joining or leaving the cluster and the key rotations on its own.
 
 This document details the procedure for deploying a StrongSwan IPsec mesh to achieve these objectives.
 
@@ -33,20 +40,13 @@ To deploy and test the VPN mesh solution, the following components must be avail
 
 ### Deployment
 
-* OpenSVC Agent: v3.0.0-rc47 or later, installed and operational on all nodes.
-* Container Runtime: Docker or Podman, to run strongSwan and the test applications.
-* StrongSwan/IPsec: The mberner/strongswan container image must be accessible. Any image with strongSwan's `charon` and `swanctl` does.
-* Backend Network: a `routed_bridge` network carrying the traffic between the nodes in tunnels, `ipip` for an ipv4 network or `ip6ip6` for an ipv6 one, the default tunnel modes.
+* OpenSVC Agent: Must be installed and operational on all nodes.
+* Container Runtime: Docker or Podman must be installed to run test applications that utilize the encrypted backend network.
+* StrongSwan/IPsec: The mberner/strongswan container image must be accessible.
 
-## How it works
+### Testing
 
-Three objects of the `system` namespace:
-
-* `system/sec/strongswan`: the pre-shared key of the mesh.
-* `system/cfg/strongswan`: the strongSwan configuration. Its `swanctl.conf` key is a template the agent renders on each node, into one IPsec transport mode connection per tunnel of the node, encrypting what the tunnel carries.
-* `system/svc/strongswan`: a service running on every node, which installs the configuration in a tmpfs, runs strongSwan in a container, and keeps them up to date with two tasks:
-  * `task#refresh` installs the configuration again when the peers of a network change: a node joining or leaving, a node address or a tunnel changing.
-  * `task#load_all` has strongSwan load the configuration again whenever an install wrote it: the refresh, a start, or a change of the pre-shared key.
+* Container Network Interface (CNI): An active CNI is required to properly route and test service-to-service traffic using containerized applications.
 
 ## Example
 
@@ -75,8 +75,7 @@ Three objects of the `system` namespace:
           |                           |                            |
 +---------------------------------------------------------------------------+
 |                          VPN MESH OVERLAY NETWORK                         |
-|   (ipip tunnels between the 10.45.0.x peers carry the 10.101.x.x traffic, |
-|    and IPsec encrypts the tunnels)                                        |
+|    (tunnels connect 10.45.0.x peers to allow 10.101.x.x svc to talk)      |
 +---------------------------------------------------------------------------+
 ```
 
@@ -89,15 +88,10 @@ Execute on a single node (adapt values to your case):
 ```
 $ sudo om cluster config update \
    --set network#backendnet.type=routed_bridge \
-   --set network#backendnet.tunnel=always \
+   --set network#backendnet.tunnel=never \
    --set network#backendnet.network=10.101.0.0/16 \
-   --set network#backendnet.mask_per_node=24
+   --set network#backendnet.ips_per_node=256
 ```
-
-`tunnel=always` carries the traffic between the nodes in tunnels even when the
-nodes share a subnet, so all of it is encrypted. The tunnel endpoints are the
-addresses the node names resolve to: set `network#backendnet.addr@<node>` to
-use other addresses.
 
 > [NOTE]
 > By default, the backend bridge name is generated automatically `obr_[networkname]`
@@ -105,134 +99,102 @@ use other addresses.
 > If you prefer a custom bridge name, you can add the option below to the previous command
 > `--set network#backendnet.dev=br-custom`
 
-Resulting section in the cluster configuration, check with command `$ sudo om cluster config show`:
+Resulting section in the cluster configuration, check with command `$ sudo om cluster print config`:
 
 ```
 [network#backendnet]
 type = routed_bridge
-tunnel = always
+tunnel = never
 network = 10.101.0.0/16
-mask_per_node = 24
+ips_per_node = 256 
 subnet@node1 = 10.101.0.0/24
 subnet@node2 = 10.101.1.0/24
 subnet@node3 = 10.101.2.0/24
 ```
 
-The subnets of the other nodes are routed through `otun*` tunnel devices:
+You can check the new configured routes:
 
 ```
 user@node1:~$ ip route show | grep ^10.101
+10.101.0.0/24 dev obr_backendnet
+10.101.1.0/24 via 10.45.0.12 dev br-prd
+10.101.2.0/24 via 10.45.0.13 dev br-prd
 ```
 
 ### Deploy the StrongSwan service
 
-Create the pre-shared key:
+Create a new secret data store:
 ```
 $ sudo om system/sec/strongswan create
-$ sudo om system/sec/strongswan key add --name psk --value "$(openssl rand -base64 32)"
 ```
 
-Store the strongSwan configuration, the same for every node:
+Store the common strongswan config:
 ```
-$ sudo om system/cfg/strongswan create
-$ sudo om system/cfg/strongswan key add --name swanctl.conf --from https://raw.githubusercontent.com/opensvc/opensvc_templates/main/strongswan/swanctl.conf
-$ sudo om system/cfg/strongswan key add --name strongswan.conf --from https://raw.githubusercontent.com/opensvc/opensvc_templates/main/strongswan/strongswan.conf
+$ sudo om system/sec/strongswan add --key strongswan --from https://raw.githubusercontent.com/opensvc/opensvc_templates/main/strongswan/strongswan.conf
 ```
 
-`swanctl.conf` is a template: it ranges over the tunnels of the node, and reads
-the pre-shared key from `system/sec/strongswan`. It selects the `ipip` and
-`ip6ip6` tunnel traffic, the protocols `4` and `41`: with
-`network#backendnet.tunnel_mode=gre`, select `47` instead.
-
-Deploy the strongswan service:
+Store the node-specific swanctl configs:
 ```
-$ sudo om system/svc/strongswan create --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/strongswan/osvc.strongswan.conf --provision --wait
+$ sudo om system/sec/strongswan add --key swanctl.node1 --from https://raw.githubusercontent.com/opensvc/opensvc_templates/main/strongswan/swanctl.conf
+$ sudo om system/sec/strongswan add --key swanctl.node2 --from https://raw.githubusercontent.com/opensvc/opensvc_templates/main/strongswan/swanctl.conf
+$ sudo om system/sec/strongswan add --key swanctl.node3 --from https://raw.githubusercontent.com/opensvc/opensvc_templates/main/strongswan/swanctl.conf
+```
+
+Adapt the swanctl configs to your IPs, CIDRs and secrets:
+```
+$ sudo om system/sec/strongswan key edit --name swanctl.node1
+$ sudo om system/sec/strongswan key edit --name swanctl.node2
+$ sudo om system/sec/strongswan key edit --name swanctl.node3
+```
+
+Deploy the strongswan service with the right config :
+```
+$ sudo om system/svc/strongswan deploy --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/strongswan/osvc.strongswan.conf
 ```
 
 After a few seconds, you should see an up and running service:
 
 ```
-user@node1:~$ sudo om system/svc/strongswan instance ls
-OBJECT                 NODE   AVAIL
-system/svc/strongswan  node1  up
-system/svc/strongswan  node2  up
-system/svc/strongswan  node3  up
+user@node1:~$ sudo om system/svc/strongswan print status
+system/svc/strongswan                    up
+└ instances
+  ├ node3                                up  idle started
+  ├ node2                                up  idle started
+  └ node1                                up  idle started
+    └ resources
+      ├ volume#1               ........  up  strongswan
+      └ container#swanctl      ...../..  up  docker mberner/strongswan:5.9.11
 ```
-
-Each node renders its own peers: on node1, the rendered configuration has a
-connection named `node2` and one named `node3`, with the tunnel endpoints as
-their addresses.
-
-```
-user@node1:~$ sudo cat /srv/strongswan.system.svc.<clustername>/swanctl.conf
-```
-
-The tasks run on the events of their node (columns abridged):
-
-```
-user@node1:~$ sudo om system/svc/strongswan schedule list
-OBJECT                 NODE   ACTION  KEY                     ...  ON                      PACE
-system/svc/strongswan  node1  run     task#load_all.schedule  ...  FileInstalled,rid=fs#1  @10s
-system/svc/strongswan  node1  run     task#refresh.schedule   ...  NetworkPeersUpdated     @30s backoff @1m
-```
-
-The connections are negotiated on the first packet a tunnel carries. Once some
-traffic flowed, list them in the container:
-
-```
-user@node1:~$ sudo docker exec system..strongswan.container.swanctl swanctl --list-sas
-```
-
-## Operate
-
-### Rotate the pre-shared key
-
-```
-$ sudo om system/sec/strongswan key change --name psk --value "$(openssl rand -base64 32)"
-```
-
-Every node renders the configuration again with the new key, and strongSwan
-loads it. The connections established keep their keys until they are
-negotiated again, the new ones use the new pre-shared key.
-
-### Add or remove a node
-
-Nothing to do: the other nodes render the tunnel to a node joining as soon as it
-is in the cluster nodes, and drop the one to a node leaving, and the instance of
-a new node renders all its tunnels when it starts.
 
 ## Test
 
 ### Deploy a test service on each nodes
 
 ```
-$ sudo om pod1 create --provision \
+$ sudo om pod1 deploy \
   --kw nodes=node1 \
   --kw orchestrate=ha \
-  --kw container#1.type=oci \
   --kw container#1.image=ghcr.io/opensvc/pause \
   --kw container#1.rm=true \
-  --kw ip#1.type=netns \
+  --kw ip#1.type=cni \
   --kw ip#1.network=backendnet \
   --kw ip#1.netns=container#1
-
-$ sudo om pod2 create --provision \
+  
+$ sudo om pod2 deploy \
   --kw nodes=node2 \
   --kw orchestrate=ha \
-  --kw container#1.type=oci \
   --kw container#1.image=ghcr.io/opensvc/pause \
   --kw container#1.rm=true \
-  --kw ip#1.type=netns \
+  --kw ip#1.type=cni \
   --kw ip#1.network=backendnet \
   --kw ip#1.netns=container#1
-
-$ sudo om pod3 create --provision \
+  
+$ sudo om pod3 deploy \
   --kw nodes=node3 \
   --kw orchestrate=ha \
-  --kw container#1.type=oci \
   --kw container#1.image=ghcr.io/opensvc/pause \
   --kw container#1.rm=true \
-  --kw ip#1.type=netns \
+  --kw ip#1.type=cni \
   --kw ip#1.network=backendnet \
   --kw ip#1.netns=container#1
 ```
@@ -242,10 +204,10 @@ $ sudo om pod3 create --provision \
 Get the IP from the services you created with:
 ```
 $ sudo om net ip list
-OBJECT    NODE    RID   IP                           NET_NAME     NET_TYPE
-pod1      node1   ip#1  10.101.0.14                  backendnet   routed_bridge
-pod2      node2   ip#1  10.101.1.79                  backendnet   routed_bridge
-pod3      node3   ip#1  10.101.2.142                 backendnet   routed_bridge
+OBJECT    NODE    RID   IP                           NET_NAME     NET_TYPE       
+pod1      node1   ip#1  10.101.0.14                  backendnet   routed_bridge  
+pod2      node3   ip#1  10.101.1.79                  backendnet   routed_bridge  
+pod3      node3   ip#1  10.101.2.142                 backendnet   routed_bridge  
 ```
 
 **For each pair of nodes :**
@@ -263,7 +225,7 @@ On the other node (node1):
 
 ```
 # ipv4
-nsenter --net=`docker inspect pod1.container.1 | jq -r .[0].NetworkSettings.SandboxKey` ping 10.101.1.79
+nsenter --net=`docker inspect pod1.container.1 | jq -r .[0].NetworkSettings.SandboxKey` ping 10.101.1.1
 
 # ipv6
 nsenter `...` ping6 ...
@@ -273,23 +235,20 @@ nsenter `...` ping6 ...
 
 #### Packets are transmitted and received (0% packet loss)
 
-Check if the packets are transmitted as plain tunnel traffic instead of ESP:
+Check if the packets are transmitted using ICMP instead of ESP using :
 ```
-# ipv4 (ipip)
-$ sudo tcpdump -i br-prd ip proto 4
+# ipv4
+$ sudo tcpdump -i br-prd icmp
 
-# ipv6 (ip6ip6)
-$ sudo tcpdump -i br-prd ip6 proto 41
+# ipv6
+$ sudo tcpdump -i br-prd ip6 and icmp
 ```
 
-If the tunnel packets are seen unencrypted, check the connections strongSwan
-loaded (`swanctl --list-conns` in the container), the rendered
-`swanctl.conf`, and the `task#load_all` runs in `om system/svc/strongswan logs`.
+If the packets are received in ICMP it means that the packets aren't encrypted. Check all the configurations of nodes, services and swanctl to see if all are corrects.
 
 #### All packets are lost (100% packet loss)
 
 - Make sure your nodes can communicate without any VPN tunnel and service and if they can recheck your nodes configuration and services configuration and make sure all the IPs and CIDRs are correct. It can also be due to firewall, ip rules...
-- The tunnels and IKE need the protocols `4` or `41`, and `50` (ESP), and the udp ports `500` and `4500`, allowed between the nodes.
 - With IPv6, check ip6 firewall tables.
 
 The DROP forward policy is a very common blocker.
