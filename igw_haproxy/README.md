@@ -1,3 +1,18 @@
+# HAProxy Ingress Gateway
+
+## Template generations
+
+| Generation | Requires | Certificates |
+| --- | --- | --- |
+| [v2](v2/README.md) | OpenSVC agent v3.0.0-rc49 or later | obtained and renewed by the agent for the domains of the routes, as they are added |
+| v1, this page | OpenSVC agent v2.1, or v3 | issued per domain by acme.sh, from a task or the config merge script |
+
+The files of a generation stay at their url, working with the agents it
+requires: a change needing a newer agent comes as a new generation, in a
+directory of its own. Use the newest generation your agents support.
+
+The rest of this page is the v1 howto.
+
 # Deploy a basic haproxy
 
     # Create the frontend TLS certificate

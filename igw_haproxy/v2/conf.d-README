@@ -1,0 +1,20 @@
+The routes of the gateway, one key per route under conf.d/ in its cfg, each
+installed in the conf.d/ directory haproxy reads after haproxy.cfg. Only the
+keys ending in .cfg are read by haproxy.
+
+A route serving a domain is a backend named after it, the https frontend
+sending the requests for a host to the backend named as that host:
+
+    backend www.example.com
+        server www www.ns1.svc.${CLUSTERNAME}:8080 resolvers clusterdns check init-addr none
+
+Saved as the conf.d/www.example.com.cfg key, the route is installed and
+haproxy reloaded on every node running the gateway, and once the dns record
+of www.example.com points to the public address of the gateway, a
+certificate is obtained for it, and renewed. The name of the key is what
+says the domain to obtain a certificate for: a route routing a domain from
+another key, or from haproxy.cfg, gets its certificate from an empty key
+named after the domain.
+
+A key can also hold a frontend of its own, as a tcp one with its bind, and
+its backends.
