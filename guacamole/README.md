@@ -12,9 +12,10 @@
 # Deploy
 
 ```
-om guacamole create
+om sec/guacamole create
 om sec/guacamole add --key dbuser --value example_user
 om sec/guacamole add --key dbpassword --value example_password
+om cfg/guacamole create
 om cfg/guacamole add --key pg_dumpall.bash --from https://raw.githubusercontent.com/opensvc/opensvc_templates/main/guacamole/pg_dumpall.bash
 om guacamole deploy --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/guacamole/guacamole.conf
 ```
