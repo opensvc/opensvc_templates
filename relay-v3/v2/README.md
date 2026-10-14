@@ -20,7 +20,9 @@ reaches it. Deployed in a namespace of your own, it needs no root grant.
   relay, a key `users/<name>` holding the password of each.
 * `<ns>/svc/relay-v3` installs them in a memory volume, takes an address from
   the cluster network `env.network` names, and runs the relay in a container,
-  which configures itself from them at each start.
+  which configures itself from them at each start, and follows them: the
+  volume installs the users again when a key of the sec changes, and the
+  relay makes its users the ones installed, within seconds, with no restart.
 
 ## Deploy
 
@@ -79,11 +81,13 @@ $ om cluster config update \
 
 ### More users
 
-Add a key per user, and restart the relay, which reads them at its start:
+Add a key per user. The relay takes it within seconds, as it does a password
+changed, or a user removed with its key:
 
 ```
 $ om ns1/sec/relay-v3 key add --name users/cluster2 --from /dev/urandom
-$ om ns1/svc/relay-v3 restart
+$ om ns1/sec/relay-v3 key change --name users/relay --from /dev/urandom
+$ om ns1/sec/relay-v3 key remove --name users/cluster2
 ```
 
 ### Your own certificate
