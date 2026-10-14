@@ -1,9 +1,12 @@
 # Heartbeat relay
 
-> **Requires OpenSVC agent v3.0.0-rc49 or later** on every node: the relay
-> takes its address from a cluster network, a lan network for an address
-> other clusters reach, joined as the network says, which earlier agents do
-> not have.
+| Minimum OpenSVC version | Minimum grant to deploy |
+| --- | --- |
+| v3.0.0-rc49 | admin of the namespace |
+
+Every node needs this version: the relay takes its address from a cluster
+network, a lan network for an address other clusters reach, joined as the
+network says, which earlier agents do not have.
 
 A failover service running an OpenSVC agent configured as a heartbeat relay,
 in a container: the nodes of the clusters using it post their heartbeats to
@@ -19,10 +22,11 @@ reaches it. Deployed in a namespace of your own, it needs no root grant.
 * `<ns>/sec/relay-v3` holds the users allowed to send their heartbeats to the
   relay, a key `users/<name>` holding the password of each.
 * `<ns>/svc/relay-v3` installs them in a memory volume, takes an address from
-  the cluster network `env.network` names, and runs the relay in a container,
-  which configures itself from them at each start, and follows them: the
-  volume installs the users again when a key of the sec changes, and the
-  relay makes its users the ones installed, within seconds, with no restart.
+  the cluster network `ip#1.network` names, `default` unless set, and runs
+  the relay in a container, which configures itself from them at each start,
+  and follows them: the volume installs the users again when a key of the sec
+  changes, and the relay makes its users the ones installed, within seconds,
+  with no restart.
 
 ## Deploy
 
@@ -43,7 +47,7 @@ Create the service, on the cluster network the relay is reached through:
 
 ```
 $ om ns1/svc/relay-v3 create --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/relay-v3/v2/relay-v3.conf \
-    --kw env.network=backend \
+    --kw ip#1.network=backend \
     --provision --wait
 ```
 
