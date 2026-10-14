@@ -1,3 +1,7 @@
+| Minimum OpenSVC version | Minimum grant to deploy |
+| --- | --- |
+| v3 | root: an address on a node interface |
+
 Deploy a HA cluster virtual ip address in a cluster.
 This ip address is useful to access the OpenSVC agent API on any available node.
 
@@ -7,4 +11,3 @@ This ip address is useful to access the OpenSVC agent API on any available node.
         --kw ip#0.netmask=24 \
         --kw ip#0.dev=br-prd
 
-Note this template is made for om3 only.

@@ -1,5 +1,8 @@
+| Minimum OpenSVC version | Minimum grant to deploy |
+| --- | --- |
+| v2.1 | root: the disks, and an address on a node interface |
+
 Requirements
-* OpenSVC agent 2.1+ installed
 * mdadm
 * 4 block devices (d1, d2, d3, d4). need to be shared between cluster nodes.
 

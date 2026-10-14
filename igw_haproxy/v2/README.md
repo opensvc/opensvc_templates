@@ -1,10 +1,14 @@
 # HAProxy Ingress Gateway, with zeroconf certificates
 
-> **Requires OpenSVC agent v3.0.0-rc49 or later** on every node: the gateway
-> installs its routes and the certificates of its domains with install lines,
-> one naming the secs of the domains by a pattern, removes the files of the
-> routes and domains gone, and obtains the certificates with an acme task
-> reading the domains from the routes, which earlier agents do not have.
+| Minimum OpenSVC version | Minimum grant to deploy |
+| --- | --- |
+| v3.0.0-rc49 | root: the public address is named, with its interface, netmask and gateway |
+
+Every node needs this version: the gateway installs its routes and the
+certificates of its domains with install lines, one naming the secs of the
+domains by a pattern, removes the files of the routes and domains gone, and
+obtains the certificates with an acme task reading the domains from the
+routes, which earlier agents do not have.
 
 A failover service running haproxy on a public address, routing the requests
 of the outside world to the services of the cluster. Its certificates follow

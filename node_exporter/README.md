@@ -1,7 +1,10 @@
+| Minimum OpenSVC version | Minimum grant to deploy |
+| --- | --- |
+| v2.1-448 | root: the host network namespace, and host path mounts |
+
 # Requirements
 
 * docker or podman installed
-* OpenSVC agent 2.1-448+ installed
 
 # Deploy the nodeexporter service.
 

@@ -1,8 +1,11 @@
+| Minimum OpenSVC version | Minimum grant to deploy |
+| --- | --- |
+| v2.1-448 | admin of the namespace |
+
 # Requirements
 
 * CNI installed
 * docker installed
-* OpenSVC agent 2.1-448+ installed
 * OpenSVC dns service installed
 * OpenTofu Installed
 

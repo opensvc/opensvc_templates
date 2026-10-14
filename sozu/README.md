@@ -1,8 +1,11 @@
+| Minimum OpenSVC version | Minimum grant to deploy |
+| --- | --- |
+| v2.1-448 | root: the host network namespace, and an app resource |
+
 # Requirements
 
 * CNI installed
 * docker or podman installed
-* OpenSVC agent 2.1-448+ installed
 * OpenSVC dns service installed
 
 # Deploy the sozu service.

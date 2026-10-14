@@ -1,7 +1,10 @@
+| Minimum OpenSVC version | Minimum grant to deploy |
+| --- | --- |
+| v2.1 | root: a host task, and a subset of containers started in parallel |
+
 Requirements
 * CNI installed
 * docker or podman installed
-* OpenSVC agent 2.1+ installed
 
 ***
 

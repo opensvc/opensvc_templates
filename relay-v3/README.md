@@ -2,10 +2,10 @@
 
 ## Template generations
 
-| Generation | Requires | Network |
-| --- | --- | --- |
-| [v2](v2/README.md) | OpenSVC agent v3.0.0-rc49 or later | an address of a cluster network, backend or lan, deployable without the root grant |
-| v1, this page | OpenSVC agent v3 | a cni address, or an address of the node's interface |
+| Generation | Minimum OpenSVC version | Minimum grant to deploy | Network |
+| --- | --- | --- | --- |
+| [v2](v2/README.md) | v3.0.0-rc49 | admin of the namespace | an address of a cluster network, backend or lan, deployable without the root grant |
+| v1, this page | v3 | root: a host path mount, and an address of the node's choosing | a cni address, or an address of the node's interface |
 
 The files of a generation stay at their url, working with the agents it
 requires: a change needing a newer agent comes as a new generation, in a

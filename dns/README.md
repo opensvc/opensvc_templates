@@ -2,10 +2,10 @@
 
 ## Template generations
 
-| Generation | Requires | Reverse lookups |
-| --- | --- | --- |
-| [v2](v2/README.md) | OpenSVC agent v3.0.0-rc49 or later | answered for the addresses of the cluster networks |
-| v1, this page | OpenSVC agent v2.1 | not answered |
+| Generation | Minimum OpenSVC version | Minimum grant to deploy | Reverse lookups |
+| --- | --- | --- | --- |
+| [v2](v2/README.md) | v3.0.0-rc49 | root: the nameservers run in the host network namespace | answered for the addresses of the cluster networks |
+| v1, this page | v2.1-1651 | root: the nameservers run in the host network namespace | not answered |
 
 The files of a generation stay at their url, working with the agents it
 requires: a change needing a newer agent comes as a new generation, in a
@@ -17,7 +17,6 @@ The rest of this page is the v1 howto.
 
 * CNI installed
 * docker or podman installed
-* OpenSVC agent installed, minimum version 2.1-1651
 * cluster.dns=ip1 [ip2 ...] configured in cluster.conf
 
 # Deploy the dns service.

@@ -2,10 +2,10 @@
 
 ## Template generations
 
-| Generation | Requires | Configuration |
-| --- | --- | --- |
-| [v2](v2/README.md) | OpenSVC agent v3.0.0-rc47 or later | one `swanctl.conf` template, rendered on each node from its tunnels, kept current by event-triggered tasks |
-| v1, this page | OpenSVC agent v2.1, or v3 | one `swanctl.conf` key per node, edited by hand |
+| Generation | Minimum OpenSVC version | Minimum grant to deploy | Configuration |
+| --- | --- | --- | --- |
+| [v2](v2/README.md) | v3.0.0-rc47 | root: a privileged container in the host network namespace, and a tmpfs filesystem | one `swanctl.conf` template, rendered on each node from its tunnels, kept current by event-triggered tasks |
+| v1, this page | v2.1, or v3 | root: a privileged container in the host network namespace | one `swanctl.conf` key per node, edited by hand |
 
 The files of a generation stay at their url, working with the agents it
 requires: a change needing a newer agent comes as a new generation, in a

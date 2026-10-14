@@ -2,10 +2,10 @@
 
 ## Template generations
 
-| Generation | Requires | Certificates |
-| --- | --- | --- |
-| [v2](v2/README.md) | OpenSVC agent v3.0.0-rc49 or later | obtained and renewed by the agent for the domains of the routes, as they are added |
-| v1, this page | OpenSVC agent v2.1, or v3 | issued per domain by acme.sh, from a task or the config merge script |
+| Generation | Minimum OpenSVC version | Minimum grant to deploy | Certificates |
+| --- | --- | --- | --- |
+| [v2](v2/README.md) | v3.0.0-rc49 | root: the public address is named, with its interface, netmask and gateway | obtained and renewed by the agent for the domains of the routes, as they are added |
+| v1, this page | v2.1, or v3 | root on v3: the `sync#i0` section (basic, acme), a host task (split configuration); admin of the namespace on v2.1 (basic, acme) | issued per domain by acme.sh, from a task or the config merge script |
 
 The files of a generation stay at their url, working with the agents it
 requires: a change needing a newer agent comes as a new generation, in a

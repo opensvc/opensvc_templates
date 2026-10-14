@@ -1,8 +1,11 @@
+| Minimum OpenSVC version | Minimum grant to deploy |
+| --- | --- |
+| v2.1-448 | root: the host network namespace, and host path mounts |
+
 # Requirements
 
 * CNI installed
 * docker or podman installed
-* OpenSVC agent 2.1-448+ installed
 * Loki service deployed (https://github.com/opensvc/opensvc_templates/tree/main/loki)
 * OpenSVC dns service installed (promtail is configured to push to http://loki:3100/loki/api/v1/push)
 

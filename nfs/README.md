@@ -1,5 +1,9 @@
 # NFS Templates
 
+| Minimum OpenSVC version | Minimum grant to deploy |
+| --- | --- |
+| v3.0.0-rc17 | root: the addresses and the services of the node |
+
 This directory provides two high-availability NFS server configurations for OpenSVC.
 
 ## 1. Host-Based NFS Server (nfsv4.conf)

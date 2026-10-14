@@ -1,9 +1,12 @@
 # Cluster nameservers
 
-> **Requires OpenSVC agent v3.0.0-rc49 or later** on every node: the
-> recursor forwards the reverse zones of the cluster networks, which the
-> agent serves and gives the install templates, and which earlier agents do
-> not have.
+| Minimum OpenSVC version | Minimum grant to deploy |
+| --- | --- |
+| v3.0.0-rc49 | root: the nameservers run in the host network namespace |
+
+Every node needs this version: the recursor forwards the reverse zones of
+the cluster networks, which the agent serves and gives the install
+templates, and which earlier agents do not have.
 
 A flex service running, on each node of `cluster.dns`, the authoritative
 nameserver of the cluster zone, fed by the agent, and a recursor answering the

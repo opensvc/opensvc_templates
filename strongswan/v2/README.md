@@ -1,9 +1,12 @@
 # StrongSwan IPsec Mesh
 
-> **Requires OpenSVC agent v3.0.0-rc47 or later** on every node: the
-> configuration is rendered by the agent from the tunnels of each node, with
-> install templates, and kept up to date by event-triggered tasks, which earlier
-> agents do not have.
+| Minimum OpenSVC version | Minimum grant to deploy |
+| --- | --- |
+| v3.0.0-rc47 | root: a privileged container in the host network namespace, and a tmpfs filesystem |
+
+Every node needs this version: the configuration is rendered by the agent
+from the tunnels of each node, with install templates, and kept up to date
+by event-triggered tasks, which earlier agents do not have.
 
 ## Rationale
 

@@ -1,8 +1,11 @@
+| Minimum OpenSVC version | Minimum grant to deploy |
+| --- | --- |
+| v2.1 | root: an address of the node's choosing, in the host network namespace |
+
 # Requirements
 
 * CNI installed
 * docker or podman installed
-* OpenSVC agent 2.1+ installed
 * Cluster DNS service installed
 
 Create a configmap to host the gobetween configuration.
