@@ -1,3 +1,18 @@
+# Cluster nameservers
+
+## Template generations
+
+| Generation | Requires | Reverse lookups |
+| --- | --- | --- |
+| [v2](v2/README.md) | OpenSVC agent v3.0.0-rc49 or later | answered for the addresses of the cluster networks |
+| v1, this page | OpenSVC agent v2.1 | not answered |
+
+The files of a generation stay at their url, working with the agents it
+requires: a change needing a newer agent comes as a new generation, in a
+directory of its own. Use the newest generation your agents support.
+
+The rest of this page is the v1 howto.
+
 # Requirements
 
 * CNI installed

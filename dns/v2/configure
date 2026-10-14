@@ -1,0 +1,61 @@
+PDNS_UID=${PDNS_UID:-953}
+PDNS_GID=${PDNS_GID:-953}
+PDNS_TMPL=/mnt/etc/server.template
+PDNS_CONF=/mnt/etc/pdns.conf
+RECURSOR_TMPL=/mnt/etc/recursor.template
+RECURSOR_CONF=/mnt/etc/recursor.conf
+NETWORKS=/mnt/etc/networks
+DNS_LIST=$(echo $DNS | tr ' ' ',')
+for d in $DNS
+do
+	case $d in
+	*:*)
+		AUTHORITY="[$d]:$PORT;$AUTHORITY"
+		;;
+	*.*)
+		AUTHORITY="$d:$PORT;$AUTHORITY"
+		;;
+	esac
+done
+
+# The clients of the recursor are the addresses of the cluster networks, and
+# the reverse zones of each network are forwarded to the authoritative server,
+# which answers them with the names of the objects holding the addresses.
+ALLOW=
+FWD=
+if [ -n "$AUTHORITY" ]
+then
+	FWD="$CLUSTERNAME=$AUTHORITY"
+fi
+while read network zones
+do
+	[ -z "$network" ] && continue
+	ALLOW="$ALLOW,$network"
+	[ -z "$AUTHORITY" ] && continue
+	for zone in $zones
+	do
+		FWD="$FWD,$zone=$AUTHORITY"
+	done
+done <$NETWORKS
+
+cp $PDNS_TMPL $PDNS_CONF
+echo "local-address+=$DNS_LIST" >>$PDNS_CONF
+echo "local-port=$PORT" >>$PDNS_CONF
+echo "remote-connection-string=unix:path=$SOCK" >>$PDNS_CONF
+
+echo "server configuration"
+echo "===================="
+cat $PDNS_CONF
+echo
+
+cp $RECURSOR_TMPL $RECURSOR_CONF
+echo "local-address+=$DNS_LIST" >>$RECURSOR_CONF
+echo "allow-from+=$DNS_LIST$ALLOW" >>$RECURSOR_CONF
+echo "forward-zones+=$FWD" >>$RECURSOR_CONF
+
+echo "recursor configuration"
+echo "======================"
+cat $RECURSOR_CONF
+
+mkdir -p /mnt/pdns-recursor
+chown $PDNS_UID:$PDNS_GID /mnt/pdns-recursor

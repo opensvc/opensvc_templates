@@ -1,0 +1,16 @@
+daemon=no
+launch=remote
+log-dns-details
+log-dns-queries
+query-logging=yes
+udp-truncation-threshold=4096
+non-local-bind
+max-packet-cache-entries=0
+max-cache-entries=0
+cache-ttl=0
+negquery-cache-ttl=0
+query-cache-ttl=0
+# The zones are asked to the agent at each query: a zone added to the cluster,
+# the reverse one of a network added, is answered at once.
+zone-cache-refresh-interval=0
+local-address=
