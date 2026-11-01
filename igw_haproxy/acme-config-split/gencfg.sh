@@ -87,8 +87,8 @@ for KEY in $KEYS; do
     
             FQDNS=$(echo "$CONTENT" | sed -nE 's/.*hdr\(host\)[[:space:]]+(-[a-z]+[[:space:]]+)*//p' | \
     		                 tr ' ' '\n' | \
-    				 grep -v '^-' | \
-    				 grep -E '^([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$' | \
+    				 { grep -v '^-' || true; } | \
+    				 { grep -E '^([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$' || true; } | \
     				 paste -sd ' '
     			         )
             for URI in $FQDNS
