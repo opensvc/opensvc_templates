@@ -1,0 +1,34 @@
+# The oc3 configuration, installed as /etc/oc3/config.yaml in the containers.
+#
+# The containers of the service share one network namespace: they reach each
+# other on 127.0.0.1, where oc3 looks for the database and redis by default.
+# The database password is not here: it comes from the OC3_DB_PASSWORD
+# environment variable, set from the db_password key of the sec. Any key can
+# be set so, OC3_ followed by its path in capitals, its dots as underscores.
+
+# The agents post their data to the feeder, and use the server, through the
+# https of container#web: both listen on 127.0.0.1 alone, nothing in clear
+# leaving the service.
+feeder:
+  addr: 127.0.0.1:8080
+
+server:
+  addr: 127.0.0.1:8081
+
+# The workers process what the feeder received, the frequent daemon updates
+# apart from the others.
+worker.slow:
+  queues:
+    - daemon_status
+    - daemon_ping
+
+worker.fast:
+  queues:
+    - instance_resource_info
+    - instance_status
+    - instance_action
+    - node_checks
+    - node_disk
+    - object_config
+    - san_switch
+    - system
