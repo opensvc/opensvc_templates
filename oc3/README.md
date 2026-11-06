@@ -18,8 +18,7 @@ the cluster configuration but the `default` network.
   with.
 * `<ns>/cfg/oc3` holds the oc3 configuration, what creates the database at its
   first start (the schema and the data of the collector, and a script setting
-  the password of oc3 on it), the web interface, as one gzipped file, and the
-  configuration of nginx. The service creates it, and fetches each of these
+  the password of oc3 on it), and the configuration of nginx. The service creates it, and fetches each of these
   keys from its url when it is missing: a key there already is kept, your own
   version of it included.
 * `<ns>/svc/oc3` installs them in a volume, takes an address from a cluster
@@ -44,49 +43,24 @@ gateway). The passwords of the database, the service generates in it:
 
 ```
 $ om ns1/sec/oc3 create --kw cn=oc3.example.com --kw alt_names=oc3.example.com
-$ om ns1/sec/oc3 gen cert
+$ om ns1/sec/oc3 certificate create
 ```
 
-A node fetches a url only from the sources the cluster trusts, those of this
-repository by default. The schema and the data of the collector, and the web
-interface, are published by their own projects: root trusts them once, for the
-service to fetch them:
-
-```
-$ om cluster config update \
-    --set 'node.allowed_urls+=https://raw.githubusercontent.com/opensvc/collector/*' \
-    --set 'node.allowed_urls+=https://raw.githubusercontent.com/opensvc/oc3-frontend/gh-pages/*'
-```
-
-Or, without root, add them to the cfg yourself, downloaded first:
-
-```
-$ curl -sSfO https://raw.githubusercontent.com/opensvc/collector/main/init/dbdump/schema.dump
-$ curl -sSfO https://raw.githubusercontent.com/opensvc/collector/main/init/dbdump/data.dump
-$ curl -sSfO https://raw.githubusercontent.com/opensvc/oc3-frontend/gh-pages/latest/index.html.gz
-$ om ns1/cfg/oc3 create
-$ om ns1/cfg/oc3 key add --name schema.sql --from schema.dump
-$ om ns1/cfg/oc3 key add --name data.sql --from data.dump
-$ om ns1/cfg/oc3 key add --name index.html.gz --from index.html.gz
-```
-
-Create the service, on the cluster network the agents and the browsers reach
+Deploy the service, on the cluster network the agents and the browsers reach
 it through:
 
 ```
-$ om ns1/svc/oc3 create --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/oc3/oc3.conf \
+$ om ns1/svc/oc3 deploy --config https://raw.githubusercontent.com/opensvc/opensvc_templates/main/oc3/oc3.conf \
     --kw ip#1.network=default \
     --kw volume#1.size=4g \
-    --provision --wait
+    --wait
 ```
 
 The volume holds the database and the files the agents upload: size it for
 your fleet, in a pool of the cluster with the room for it.
 
 Its first start fetches the keys the cfg lacks, then creates the database, a
-minute or two. A url the cluster does not trust fails the start, the log of the
-service naming it. The address taken is
-the one of `ip#1`:
+minute or two. The address taken is the one of `ip#1`:
 
 ```
 $ om ns1/svc/oc3 instance status -r
@@ -135,12 +109,14 @@ $ om ns1/svc/oc3 restart
 `migrate` brings the database up to the new version as oc3 starts. Back the
 database up first: `om ns1/svc/oc3 task run dbdump`.
 
-The web interface is the key `index.html.gz` of the cfg, the same on every
-node, the latest release when the service was deployed. Change it to another
-release, served at once, with no restart:
+The web interface is one gzipped file in the volume, `/web/html/index.html.gz`,
+fetched from the latest oc3-frontend release when the service was deployed,
+and following the volume from node to node. Move to another release by its
+url: the next start fetches it, the url changed:
 
 ```
-$ om ns1/cfg/oc3 key change --name index.html.gz --from https://raw.githubusercontent.com/opensvc/oc3-frontend/gh-pages/<version>/index.html.gz
+$ om ns1/svc/oc3 config update --set env.web_url=https://github.com/opensvc/oc3-frontend/releases/download/<version>/index.html.gz
+$ om ns1/svc/oc3 restart
 ```
 
 ### Back up and restore
@@ -170,7 +146,7 @@ What was written to the database since the dump is lost.
 ### Certificate and gateway
 
 oc3 is served with the `certificate_chain` and the `private_key` of the sec:
-`gen cert` writes them, or add your own, a certificate your agents and
+`certificate create` writes them, or add your own, a certificate your agents and
 browsers trust, and restart the web container:
 
 ```
@@ -179,7 +155,7 @@ $ om ns1/sec/oc3 key change --name private_key --from /path/to/key.pem
 $ om ns1/svc/oc3 restart --rid container#web
 ```
 
-`gen cert` signs with the certificate authority the `ca` keyword of the sec
+`certificate create` signs with the certificate authority the `ca` keyword of the sec
 names, a sec of the same namespace for an admin of it, or self-signs. A gateway
 in front of oc3, as the ingress gateway templates of this repository, keeps it
 encrypted to the end, its hop to oc3 crossing the network of the cluster:
