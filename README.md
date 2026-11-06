@@ -5,6 +5,10 @@ This project contains templates for the OpenSVC infrastructure services:
 * collector
 
   The OpenSVC site-wide infrastructure information collector and reporting server.
+
+* oc3
+
+  The OpenSVC collector v3: the agents feed it their status, actions and inventory, browsed and reported on in its web interface. Deployed by an admin of a namespace.
   
 * dns
 
