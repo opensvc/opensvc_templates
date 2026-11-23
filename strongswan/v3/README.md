@@ -2,7 +2,7 @@
 
 | Minimum OpenSVC version | Minimum grant to deploy |
 | --- | --- |
-| v3.0.0-rc68 | root: a privileged container in the host network namespace, and a tmpfs filesystem |
+| v3.0.0-rc71 | root: a privileged container in the host network namespace, and a tmpfs filesystem |
 
 Every node needs this version: the configuration is rendered by the agent
 from the tunnels of each node, with install templates, and kept up to date
@@ -36,7 +36,7 @@ To deploy and test the VPN mesh solution, the following components must be avail
 
 ### Deployment
 
-* OpenSVC Agent: v3.0.0-rc68 or later, installed and operational on all nodes.
+* OpenSVC Agent: v3.0.0-rc71 or later, installed and operational on all nodes.
 * Container Runtime: Docker or Podman, to run strongSwan and the test applications.
 * StrongSwan/IPsec: The mberner/strongswan container image must be accessible. Any image with strongSwan's `charon` and `swanctl` does.
 * Backend Network: a `routed_bridge` network carrying the traffic between the nodes in tunnels, in any tunnel mode: `ipip`, `ip6ip6` or `gre`.

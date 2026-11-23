@@ -2,7 +2,7 @@
 
 | Minimum OpenSVC version | Minimum grant to deploy |
 | --- | --- |
-| v3.0.0-rc68 | root: the nameservers run in the host network namespace |
+| v3.0.0-rc71 | root: the nameservers run in the host network namespace |
 
 Every node needs this version: the recursor forwards the reverse zones of
 the cluster networks, which the agent serves and gives the install

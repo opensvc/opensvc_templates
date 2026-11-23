@@ -4,7 +4,7 @@
 
 | Generation | Minimum OpenSVC version | Minimum grant to deploy | Reverse lookups |
 | --- | --- | --- | --- |
-| [v3](v3/README.md) | v3.0.0-rc68 | root: the nameservers run in the host network namespace | v2, the template reading the networks with the snake case field names om gives templates since v3.0.0-rc68 |
+| [v3](v3/README.md) | v3.0.0-rc71 | root: the nameservers run in the host network namespace | v2, the template reading the networks with the snake case field names om gives templates since v3.0.0-rc71 |
 | [v2](v2/README.md) | v3.0.0-rc49 to rc67 | root: the nameservers run in the host network namespace | answered for the addresses of the cluster networks |
 | v1, this page | v2.1-1651 | root: the nameservers run in the host network namespace | not answered |
 
