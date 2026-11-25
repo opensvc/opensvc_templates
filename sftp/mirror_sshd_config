@@ -1,0 +1,34 @@
+# The sshd configuration of the optional read-only mirror endpoint,
+# container#mirror. Kept in the cfg, key mirror_sshd_config: edit it there,
+# then restart the container.
+
+# Beside the sftp server, in the same network namespace.
+Port 2222
+
+# The host keys of the sftp server, read-only.
+HostKey /etc/ssh/keys/ssh_host_ed25519_key
+HostKey /etc/ssh/keys/ssh_host_ecdsa_key
+HostKey /etc/ssh/keys/ssh_host_rsa_key
+
+# One account, mirror, of uid 0 to read the files of every user: a ssh key
+# only, from the mirror_keys/mirror key of the cfg.
+AllowUsers mirror
+AuthorizedKeysFile /etc/authorized_keys/%u
+PubkeyAuthentication yes
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitRootLogin prohibit-password
+
+# sftp read-only, locked in /data, which is mounted read-only too.
+Subsystem sftp internal-sftp -R
+ForceCommand internal-sftp -R
+ChrootDirectory /data
+DisableForwarding yes
+PermitTTY no
+X11Forwarding no
+
+# A mirroring tool opens many sessions at once: raise the number of
+# connections waiting for authentication sshd accepts (10 by default).
+MaxStartups 64:30:128
+
+LogLevel INFO

@@ -1,0 +1,27 @@
+# The sshd configuration of the sftp server, container#sftp.
+# Kept in the cfg, key sshd_config: edit it there, then restart the container.
+
+Port 22
+
+# Made at the first start, kept in the volume: the clients see the same server
+# whatever the node.
+HostKey /etc/ssh/keys/ssh_host_ed25519_key
+HostKey /etc/ssh/keys/ssh_host_ecdsa_key
+HostKey /etc/ssh/keys/ssh_host_rsa_key
+
+# A ssh key only, from the authorized_keys/<user> key of the cfg.
+AuthorizedKeysFile /etc/authorized_keys/%u
+PubkeyAuthentication yes
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PermitRootLogin no
+
+# sftp alone, each user locked in /data/<user>, writing in its upload/.
+Subsystem sftp internal-sftp
+ForceCommand internal-sftp
+ChrootDirectory /data/%u
+DisableForwarding yes
+PermitTTY no
+X11Forwarding no
+
+LogLevel INFO

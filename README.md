@@ -10,6 +10,10 @@ This project contains templates for the OpenSVC infrastructure services:
 
   The OpenSVC collector v3: the agents feed it their status, actions and inventory, browsed and reported on in its web interface. Deployed by an admin of a namespace.
   
+* sftp
+
+  An sftp server, an account per user locked in a directory of its own, ssh keys only, with an optional read-only endpoint for a mirroring system. A step by step tutorial. Deployed by an admin of a namespace.
+
 * dns
 
   The in-cluster nameserver serving the backend networks ip addresses of services.
