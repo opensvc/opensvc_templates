@@ -1,0 +1,31 @@
+# The configuration of the forgejo runner, the runner-config.yml key of the
+# cfg. runner.sh fills @URL@ and @UUID@. Restart container#runner after a
+# change. The reference: forgejo-runner generate-config.
+log:
+  level: info
+
+runner:
+  # jobs run at once
+  capacity: 1
+  timeout: 3h
+  # what the workflows ask with runs-on, and the image their jobs run in
+  labels:
+    - docker:docker://data.forgejo.org/oci/node:24-trixie
+    - ubuntu-latest:docker://data.forgejo.org/oci/node:24-trixie
+
+cache:
+  enabled: true
+
+container:
+  # a network per job, on the docker engine of the runner pod
+  network: ""
+  privileged: false
+  # the jobs get no docker engine
+  docker_host: "-"
+
+server:
+  connections:
+    forgejo:
+      url: @URL@
+      uuid: @UUID@
+      token_url: file:/tmp/runner/token
